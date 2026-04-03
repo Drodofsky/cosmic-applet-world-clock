@@ -860,7 +860,6 @@ dependencies = [
 name = "cosmic-applet-time"
 version = "1.0.2"
 dependencies = [
- "cosmic-applets-config",
  "i18n-embed",
  "i18n-embed-fl",
  "icu",
@@ -874,14 +873,6 @@ dependencies = [
  "tracing-log",
  "tracing-subscriber",
  "zbus",
-]
-
-[[package]]
-name = "cosmic-applets-config"
-version = "1.0.2"
-dependencies = [
- "cosmic-config",
- "serde",
 ]
 
 [[package]]
