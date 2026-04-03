@@ -3,7 +3,7 @@
 
 use cosmic::{
     Element, Task, app,
-    applet::cosmic_panel_config::PanelAnchor,
+    applet::{cosmic_panel_config::PanelAnchor, row::Row},
     iced::{
         Alignment, Length, Rectangle, Subscription,
         futures::{SinkExt, StreamExt, channel::mpsc},
@@ -19,12 +19,15 @@ use std::hash::Hash;
 use std::sync::LazyLock;
 use tokio::time;
 
+use crate::world_clocks::get_gnome_clocks;
+
 static AUTOSIZE_MAIN_ID: LazyLock<Id> = LazyLock::new(|| Id::new("autosize-main"));
 
 pub struct Window {
     core: cosmic::app::Core,
     rectangle_tracker: Option<RectangleTracker<u32>>,
     rectangle: Rectangle,
+    world_clocks: Vec<(String, String)>, // (city_name, iana_timezone)
 }
 
 #[derive(Debug, Clone)]
@@ -56,17 +59,36 @@ impl Window {
     }
 
     fn horizontal_layout(&self) -> Element<'_, Message> {
-        Element::from(
-            row!(
-                self.core.applet.text("Tokyo 18:43"),
-                container(space::vertical().height(Length::Fixed(
-                    (self.core.applet.suggested_size(true).1
-                        + 2 * self.core.applet.suggested_padding(true).1)
-                        as f32
-                )))
-            )
-            .align_y(Alignment::Center),
-        )
+        let now = jiff::Zoned::now();
+        let clocks: Vec<_> = self
+            .world_clocks
+            .iter()
+            .map(|(city, tz_name)| {
+                let time = if let Ok(tz) = jiff::tz::TimeZone::get(tz_name) {
+                    let zoned = now.with_time_zone(tz);
+                    format!("{} {:02}:{:02}", city, zoned.hour(), zoned.minute())
+                } else {
+                    format!("{} --:--", city)
+                };
+                Element::from(
+                    row!(
+                        self.core.applet.text(time),
+                        container(space::vertical().height(Length::Fixed(
+                            (self.core.applet.suggested_size(true).1
+                                + 2 * self.core.applet.suggested_padding(true).1)
+                                as f32
+                        )))
+                    )
+                    .align_y(Alignment::Center),
+                )
+            })
+            .collect();
+        let mut row = Row::new();
+        for clock in clocks {
+            row = row.push(clock);
+        }
+
+        row.spacing(12).into()
     }
 }
 
@@ -82,6 +104,7 @@ impl cosmic::Application for Window {
                 core,
                 rectangle_tracker: None,
                 rectangle: Rectangle::default(),
+                world_clocks: get_gnome_clocks(),
             },
             Task::none(),
         )
@@ -163,7 +186,10 @@ impl cosmic::Application for Window {
 
     fn update(&mut self, message: Self::Message) -> app::Task<Self::Message> {
         match message {
-            Message::Tick => Task::none(),
+            Message::Tick => {
+                self.world_clocks = get_gnome_clocks();
+                Task::none()
+            }
             Message::Rectangle(u) => {
                 match u {
                     RectangleUpdate::Rectangle(r) => {

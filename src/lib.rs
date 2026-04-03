@@ -3,7 +3,7 @@
 
 mod localize;
 mod window;
-
+mod world_clocks;
 use window::Window;
 
 pub fn run() -> cosmic::iced::Result {
