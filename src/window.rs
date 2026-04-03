@@ -137,7 +137,7 @@ impl cosmic::Application for Window {
                     // Mark this receiver's state as changed so that it always receives an initial
                     // update during the loop below
                     // This allows us to avoid duplicating code from the loop
-                    let period = 1;
+                    let period = 60;
                     let mut timer = time::interval(time::Duration::from_secs(period));
                     timer.set_missed_tick_behavior(time::MissedTickBehavior::Skip);
 

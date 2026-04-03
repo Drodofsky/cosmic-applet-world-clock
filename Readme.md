@@ -15,6 +15,10 @@ A world clock panel applet for the [COSMIC desktop](https://github.com/pop-os/co
 - COSMIC desktop
 - GNOME Clocks (Flatpak: `org.gnome.clocks`)
 
+## Known Issues
+
+- Adding or removing clocks in GNOME Clocks may take up to one minute to appear in the applet.
+
 ## Building from source
 ```bash
 just build-release
