@@ -1,6 +1,8 @@
-# cosmic-applet-world-clock
-
+# cosmic-world-clock
 A world clock panel applet for the [COSMIC desktop](https://github.com/pop-os/cosmic-epoch) that displays times from your [GNOME Clocks](https://apps.gnome.org/Clocks/) world clock locations.
+
+
+![](media/pict_1.png)
 
 ## Features
 
