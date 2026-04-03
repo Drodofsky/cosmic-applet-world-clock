@@ -5,7 +5,6 @@ edition = "2024"
 license = "GPL-3.0-only"
 
 [dependencies]
-cosmic-applets-config.workspace = true
 jiff = "0.2"
 i18n-embed-fl.workspace = true
 i18n-embed.workspace = true
